@@ -1,6 +1,6 @@
 version: '2'
 services:
-
+  # Docker probe
   cadvisor:
     image: google/cadvisor
     volumes:
@@ -13,8 +13,23 @@ services:
     ports:
       - "8005:8080"
 
+  # Server probe
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    command:
+      - '--path.rootfs=/host'
+    network_mode: host
+    pid: host
+    restart: unless-stopped
+    #    ports:
+    #      - '9100:9100'
+    volumes:
+      - '/:/host:ro,rslave'
+
+  # Monitoring recording system
   prometheus:
-    image: prom/prometheus:v2.0.0
+    image: prom/prometheus:v2.35.0
     volumes:
       - ./docker/prometheus/:/etc/prometheus/
       - ./prometheus-data:/prometheus
@@ -29,8 +44,9 @@ services:
     ports:
       - "9090:9090"
 
+  # Dashbords renderer
   grafana:
-    image: grafana/grafana:4.6.2
+    image: grafana/grafana:8.5.0
     volumes:
       - ./grafana-data:/var/lib/grafana
     expose:
