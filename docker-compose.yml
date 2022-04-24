@@ -2,7 +2,7 @@ version: '2'
 services:
   # Docker probe
   cadvisor:
-    image: google/cadvisor
+    image: google/cadvisor:latest
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:rw
